@@ -1,4 +1,12 @@
-# BoringSSL
+## BoringSSL
+A modification for needs for myself, from original by Google.
+
+This repo turn to master as trace.
+
+All changes can be find in the commits.
+
+
+## BoringSSL
 
 BoringSSL is a fork of OpenSSL that is designed to meet Google's needs.
 
