@@ -2595,7 +2595,7 @@ TEST(SSLTest, SetVersion) {
   EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), 0));
   EXPECT_EQ(TLS1_3_VERSION, ctx->conf_max_version);  /// EXPECT_EQ(TLS1_2_VERSION, ctx->conf_max_version);
   EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), 0));
-  EXPECT_EQ(TLS1_VERSION, ctx->conf_min_version);
+  EXPECT_EQ(TLS1_2_VERSION, ctx->conf_min_version);  /// EXPECT_EQ(TLS1_VERSION, ctx->conf_min_version);
 
   // TLS 1.3 is available, but not by default.
   EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_3_VERSION));
@@ -2629,7 +2629,7 @@ TEST(SSLTest, SetVersion) {
   EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), 0));
   EXPECT_EQ(TLS1_3_VERSION, ctx->conf_max_version);  /// EXPECT_EQ(TLS1_2_VERSION, ctx->conf_max_version);
   EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), 0));
-  EXPECT_EQ(TLS1_1_VERSION, ctx->conf_min_version);
+  EXPECT_EQ(TLS1_2_VERSION, ctx->conf_min_version);  /// EXPECT_EQ(TLS1_1_VERSION, ctx->conf_min_version);
 }
 
 static const char *GetVersionName(uint16_t version) {
