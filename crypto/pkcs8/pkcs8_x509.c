@@ -669,11 +669,22 @@ int PKCS12_get_key_and_certs(EVP_PKEY **out_key, STACK_OF(X509) *out_certs,
       goto err;
     }
 
+#if defined(BORINGSSL_UNSAFE_FUZZER_MODE)
+    static const uint64_t kIterationsLimit = 2048;
+#else
+    // Windows imposes a limit of 600K. Mozilla say: “so them increasing
+    // maximum to something like 100M or 1G (to have few decades of breathing
+    // room) would be very welcome”[1]. So here we set the limit to 100M.
+    //
+    // [1] https://bugzilla.mozilla.org/show_bug.cgi?id=1436873#c14
+    static const uint64_t kIterationsLimit = 100 * 1000000;
+#endif
+
     // The iteration count is optional and the default is one.
     uint64_t iterations = 1;
     if (CBS_len(&mac_data) > 0) {
       if (!CBS_get_asn1_uint64(&mac_data, &iterations) ||
-          iterations > UINT_MAX) {
+          iterations > kIterationsLimit) {
         OPENSSL_PUT_ERROR(PKCS8, PKCS8_R_BAD_PKCS12_DATA);
         goto err;
       }
