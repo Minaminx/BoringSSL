@@ -38,6 +38,9 @@ if (NOT GO_EXECUTABLE)
   message(FATAL_ERROR "Could not find Go")
 endif()
 
+if (USE_CUSTOM_LIBCXX)
+  set(BORINGSSL_ALLOW_CXX_RUNTIME 1)
+endif()
 if (BORINGSSL_ALLOW_CXX_RUNTIME)
   add_definitions(-DBORINGSSL_ALLOW_CXX_RUNTIME)
 endif()
@@ -256,8 +259,8 @@ if(CFI)
   endif()
 
   # TODO(crbug.com/785442): Remove -fsanitize-cfi-icall-generalize-pointers.
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=cfi -fno-sanitize-trap=cfi -fsanitize-cfi-icall-generalize-pointers -flto")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=cfi -fno-sanitize-trap=cfi -fsanitize-cfi-icall-generalize-pointers -flto")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=cfi -fno-sanitize-trap=cfi -fsanitize-cfi-icall-generalize-pointers -flto=thin")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=cfi -fno-sanitize-trap=cfi -fsanitize-cfi-icall-generalize-pointers -flto=thin")
   # We use Chromium's copy of clang, which requires -fuse-ld=lld if building
   # with -flto. That, in turn, can't handle -ggdb.
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld")
@@ -361,6 +364,61 @@ if (${ARCH} STREQUAL "x86" AND APPLE AND ${CMAKE_VERSION} VERSION_LESS "3.0")
   set(ARCH "x86_64")
 endif()
 
+if (USE_CUSTOM_LIBCXX)
+  if (NOT CLANG)
+    message(FATAL_ERROR "USE_CUSTOM_LIBCXX only supported with Clang")
+  endif()
+
+  # CMAKE_CXX_FLAGS ends up in the linker flags as well, so use
+  # add_compile_options. There does not appear to be a way to set
+  # language-specific compile-only flags.
+  add_compile_options("-nostdinc++")
+  set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -nostdlib++")
+  include_directories(
+    SYSTEM
+    util/bot/libcxx/include
+    util/bot/libcxxabi/include
+  )
+
+  # This is patterned after buildtools/third_party/libc++/BUILD.gn and
+  # buildtools/third_party/libc++abi/BUILD.gn in Chromium.
+
+  file(GLOB LIBCXX_SOURCES "util/bot/libcxx/src/*.cpp")
+  file(GLOB LIBCXXABI_SOURCES "util/bot/libcxxabi/src/*.cpp")
+
+  # This file is meant for exception-less builds.
+  list(REMOVE_ITEM LIBCXXABI_SOURCES "trunk/src/cxa_noexception.cpp")
+  # libc++ also defines new and delete.
+  list(REMOVE_ITEM LIBCXXABI_SOURCES "trunk/src/stdlib_new_delete.cpp")
+  if (TSAN)
+    # ThreadSanitizer tries to intercept these symbols. Skip them to avoid
+    # symbol conflicts.
+    list(REMOVE_ITEM LIBCXXABI_SOURCES "trunk/src/cxa_guard.cpp")
+  endif()
+
+  add_library(libcxxabi ${LIBCXXABI_SOURCES})
+  target_compile_definitions(
+    libcxxabi PRIVATE
+    -D_LIBCPP_ENABLE_CXX17_REMOVED_UNEXPECTED_FUNCTIONS
+  )
+  set_target_properties(libcxxabi PROPERTIES COMPILE_FLAGS "-Wno-missing-prototypes -Wno-implicit-fallthrough")
+
+  add_library(libcxx ${LIBCXX_SOURCES})
+  if (ASAN OR MSAN OR TSAN)
+    # Sanitizers try to intercept new and delete.
+    target_compile_definitions(
+      libcxx PRIVATE
+      -D_LIBCPP_DISABLE_NEW_DELETE_DEFINITIONS
+    )
+  endif()
+  target_compile_definitions(
+    libcxx PRIVATE
+    -D_LIBCPP_BUILDING_LIBRARY
+    -DLIBCXX_BUILDING_LIBCXXABI
+  )
+  target_link_libraries(libcxx libcxxabi)
+endif()
+
 # Add minimal googletest targets. The provided one has many side-effects, and
 # googletest has a very straightforward build.
 add_library(boringssl_gtest third_party/googletest/src/gtest-all.cc)
@@ -406,13 +464,17 @@ if (NOT ${CMAKE_VERSION} VERSION_LESS "3.2")
   set(MAYBE_USES_TERMINAL USES_TERMINAL)
 endif()
 
+if(UNIX AND NOT APPLE AND NOT ANDROID)
+  set(HANDSHAKER_ARGS "-handshaker-path" $<TARGET_FILE:handshaker>)
+endif()
+
 add_custom_target(
     run_tests
     COMMAND ${GO_EXECUTABLE} run util/all_tests.go -build-dir
             ${CMAKE_BINARY_DIR}
     COMMAND cd ssl/test/runner &&
             ${GO_EXECUTABLE} test -shim-path $<TARGET_FILE:bssl_shim>
-              ${RUNNER_ARGS}
+              ${HANDSHAKER_ARGS} ${RUNNER_ARGS}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     DEPENDS all_tests bssl_shim handshaker
     ${MAYBE_USES_TERMINAL})
