@@ -1,5 +1,5 @@
 ## BoringSSL
-[![build](https://travis-ci.org/Minaminx/BoringSSL.svg?branch=master)](https://github.com/Minaminx/BoringSSL)
+[![build](https://travis-ci.org/Minaminx/BoringSSL.svg?branch=master)](https://travis-ci.org/Minaminx/BoringSSL)
 [![language](https://github.com/nanqinlang/SVG/blob/master/language-c-blue.svg)](https://github.com/Minaminx/BoringSSL)
 [![author](https://github.com/nanqinlang/SVG/blob/master/author-nanqinlang-lightgrey.svg)](https://github.com/Minaminx/BoringSSL)
 
@@ -7,7 +7,7 @@ A modification for needs for myself, from original by Google.
 
 This repo turn to master as trace.
 
-All changes can be find in the commits.
+All changes can be found in the commits.
 
 
 ## BoringSSL
