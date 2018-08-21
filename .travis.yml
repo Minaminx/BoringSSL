@@ -1,8 +1,5 @@
 language: c
 
-dist: trusty
-sudo: required
-
 # https://docs.travis-ci.com/user/languages/c/
 matrix:
   include:
@@ -13,9 +10,11 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-6
+            - g++-8
       env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+        - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+      dist: trusty
+      sudo: required
 
 before_install: 
   - eval "${MATRIX_EVAL}"
