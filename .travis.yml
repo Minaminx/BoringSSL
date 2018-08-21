@@ -1,9 +1,10 @@
 language: c
 
 sudo: required
+dist: trusty
 
 before_install: 
-  - sudo echo -e "\ndeb http://apt.llvm.org/stretch/ llvm-toolchain-stretch main\ndeb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch main\ndeb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-5.0 main\ndeb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-5.0 main\ndeb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-6.0 main\ndeb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-6.0 main" >> /etc/apt/sources.list
+  - sudo echo -e "\ndeb http://apt.llvm.org/trusty/ llvm-toolchain-trusty main\ndeb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty main\ndeb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main\ndeb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main\ndeb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main\ndeb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main\ndeb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main" >> /etc/apt/sources.list
   - sudo apt-get update
   - sudo wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
   - sudo apt-get update
