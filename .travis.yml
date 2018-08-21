@@ -7,14 +7,14 @@ before_install:
   - sudo apt-get install -y build-essential clang cmake ccache golang
 
 script: 
-  - git clone --depth=1 --branch=master https://github.com/Minaminx/BoringSSL.git boringssl
-  - cd boringssl
-  - export CFLAGS="-Wno-error"
-  - mkdir build && cd build
-  - cmake -DCMAKE_BUILD_TYPE=Release -DOPENSSL_SMALL=1 ../
-  - make
-  - cd ..
-  - mkdir -p .openssl/lib && cd .openssl && ln -s ../include .
-  - cd ..
-  - cp build/crypto/libcrypto.a build/ssl/libssl.a .openssl/lib
-  - cd ..
+  - sudo git clone --depth=1 --branch=master https://github.com/Minaminx/BoringSSL.git boringssl \
+    && sudo cd boringssl \
+    && sudo export CFLAGS="-Wno-error" \
+    && sudo mkdir build && cd build \
+    && sudo cmake -DCMAKE_BUILD_TYPE=Release -DOPENSSL_SMALL=1 ../ \
+    && sudo make \
+    && sudo cd .. \
+    && sudo mkdir -p .openssl/lib && cd .openssl && ln -s ../include . \
+    && sudo cd .. \
+    && sudo cp build/crypto/libcrypto.a build/ssl/libssl.a .openssl/lib \
+    && sudo cd ..
