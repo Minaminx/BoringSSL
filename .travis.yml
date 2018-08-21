@@ -3,10 +3,6 @@ language: c
 dist: trusty
 sudo: required
 
-compiler:
-  - clang
-  - gcc
-
 # https://docs.travis-ci.com/user/languages/c/
 matrix:
   include:
