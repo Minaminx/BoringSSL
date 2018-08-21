@@ -4,10 +4,6 @@ sudo: required
 dist: trusty
 
 before_install: 
-  - sudo echo -e "\ndeb http://apt.llvm.org/trusty/ llvm-toolchain-trusty main\ndeb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty main\ndeb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main\ndeb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty-5.0 main\ndeb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main\ndeb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main\ndeb http://ppa.launchpad.net/ubuntu-toolchain-r/test/ubuntu trusty main" >> /etc/apt/sources.list
-  - sudo apt-get update
-  - sudo wget -O - http://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
-  - sudo apt-get update
   - sudo apt-get install -y build-essential clang cmake ccache golang
 
 script: 
