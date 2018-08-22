@@ -650,19 +650,19 @@ bool ssl_cipher_get_evp_aead(const EVP_AEAD **out_aead,
 
   if (cipher->algorithm_mac == SSL_AEAD) {
     if (cipher->algorithm_enc == SSL_AES128GCM) {
-      if (is_tls12) {
-        *out_aead = EVP_aead_aes_128_gcm_tls12();
-      } else if (is_tls13) {
+      if (is_tls13) {
         *out_aead = EVP_aead_aes_128_gcm_tls13();
+      } else if (is_tls12) {
+        *out_aead = EVP_aead_aes_128_gcm_tls12();
       } else {
         *out_aead = EVP_aead_aes_128_gcm();
       }
       *out_fixed_iv_len = 4;
     } else if (cipher->algorithm_enc == SSL_AES256GCM) {
-      if (is_tls12) {
-        *out_aead = EVP_aead_aes_256_gcm_tls12();
-      } else if (is_tls13) {
+      if (is_tls13) {
         *out_aead = EVP_aead_aes_256_gcm_tls13();
+      } else if (is_tls12) {
+        *out_aead = EVP_aead_aes_256_gcm_tls12();
       } else {
         *out_aead = EVP_aead_aes_256_gcm();
       }
@@ -673,12 +673,11 @@ bool ssl_cipher_get_evp_aead(const EVP_AEAD **out_aead,
     } else {
       return false;
     }
-
-    // In TLS 1.3, the iv_len is equal to the AEAD nonce length whereas the code
-    // above computes the TLS 1.2 construction.
+    // In TLS 1.3, the iv_len is equal to the AEAD nonce length whereas the code above computes the TLS 1.2 construction.
     if (version >= TLS1_3_VERSION) {
       *out_fixed_iv_len = EVP_AEAD_nonce_length(*out_aead);
     }
+
   } else if (cipher->algorithm_mac == SSL_SHA1) {
     if (cipher->algorithm_enc == SSL_eNULL) {
       *out_aead = EVP_aead_null_sha1_tls();
@@ -717,8 +716,8 @@ bool ssl_cipher_get_evp_aead(const EVP_AEAD **out_aead,
     return false;
   }
 
-  *out_mac_secret_len = SHA256_DIGEST_LENGTH;
-} else if (cipher->algorithm_mac == SSL_SHA384) {
+    *out_mac_secret_len = SHA256_DIGEST_LENGTH;
+  } else if (cipher->algorithm_mac == SSL_SHA384) {
     if (cipher->algorithm_enc != SSL_AES256) {
         return false;
     }
