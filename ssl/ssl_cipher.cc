@@ -1539,21 +1539,24 @@ uint16_t SSL_CIPHER_get_min_version(const SSL_CIPHER *cipher) {
   if (cipher->algorithm_mkey == SSL_kGENERIC ||
       cipher->algorithm_auth == SSL_aGENERIC) {
     return TLS1_3_VERSION;
-  }
-
-  if (cipher->algorithm_prf != SSL_HANDSHAKE_MAC_DEFAULT) {
-    // Cipher suites before TLS 1.2 use the default PRF, while all those added
-    // afterwards specify a particular hash.
+  } else {
     return TLS1_2_VERSION;
   }
+
+  /// if (cipher->algorithm_prf != SSL_HANDSHAKE_MAC_DEFAULT) {
+  ///   // Cipher suites before TLS 1.2 use the default PRF, while all those added
+  ///   // afterwards specify a particular hash.
+  ///   return TLS1_2_VERSION;
+  /// }
 }
 
 uint16_t SSL_CIPHER_get_max_version(const SSL_CIPHER *cipher) {
   if (cipher->algorithm_mkey == SSL_kGENERIC ||
       cipher->algorithm_auth == SSL_aGENERIC) {
     return TLS1_3_VERSION;
+  } else {
+    return TLS1_2_VERSION;
   }
-  return TLS1_2_VERSION;
 }
 
 // return the actual cipher being used
