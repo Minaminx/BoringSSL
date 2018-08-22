@@ -1546,7 +1546,6 @@ uint16_t SSL_CIPHER_get_min_version(const SSL_CIPHER *cipher) {
     // afterwards specify a particular hash.
     return TLS1_2_VERSION;
   }
-  return SSL3_VERSION;
 }
 
 uint16_t SSL_CIPHER_get_max_version(const SSL_CIPHER *cipher) {
