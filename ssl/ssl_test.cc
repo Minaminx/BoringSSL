@@ -289,7 +289,7 @@ static const CipherTest kCipherTests[] = {
     },
     // SSLv3 matches everything that existed before TLS 1.2.
     {
-        "AES128-SHA:AES128-SHA256:!SSLv3",  /// "AES128-SHA:ECDHE-RSA-AES128-GCM-SHA256:!SSLv3",
+        "AES128-SHA:AES128-SHA256",  /// "AES128-SHA:ECDHE-RSA-AES128-GCM-SHA256:!SSLv3",
         {
             {TLS1_CK_RSA_WITH_AES_128_SHA256, 0},  /// {TLS1_CK_ECDHE_RSA_WITH_AES_128_GCM_SHA256, 0},
         },
@@ -306,7 +306,7 @@ static const CipherTest kCipherTests[] = {
     // The two directives have no intersection.  But each component is valid, so
     // even in strict mode it is accepted.
     {
-        "AES128-SHA:AES128-SHA256:!TLSv1.2+SSLv3",  /// "AES128-SHA:ECDHE-RSA-AES128-GCM-SHA256:!TLSv1.2+SSLv3",
+        "AES128-SHA:AES128-SHA256:!TLSv1.2",  /// "AES128-SHA:ECDHE-RSA-AES128-GCM-SHA256:!TLSv1.2+SSLv3",
         {
             {TLS1_CK_RSA_WITH_AES_128_SHA, 0},
             {TLS1_CK_RSA_WITH_AES_128_SHA256, 0},  /// {TLS1_CK_ECDHE_RSA_WITH_AES_128_GCM_SHA256, 0},
@@ -363,7 +363,6 @@ static const char *kMustNotIncludeNull[] = {
   "SHA",
   "SHA1",
   "RSA",
-  "SSLv3",
   "TLSv1",
   "TLSv1.2",
 };
