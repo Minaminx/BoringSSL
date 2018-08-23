@@ -828,7 +828,7 @@ TEST(SSLTest, DefaultVersion) {
   /// ExpectDefaultVersion(TLS1_2_VERSION, TLS1_2_VERSION, &DTLSv1_2_method);
   ExpectDefaultVersion(TLS1_2_VERSION, TLS1_3_VERSION, &TLS_method);
   ExpectDefaultVersion(TLS1_2_VERSION, TLS1_2_VERSION, &TLSv1_2_method);
-  ExpectDefaultVersion(TLS1_3_VERSION, TLS1_3_VERSION, &TLSv1_3_method);
+  ExpectDefaultVersion(TLS1_3_VERSION, TLS1_3_VERSION, &TLSv1_2_method);
 }
 
 TEST(SSLTest, CipherProperties) {
