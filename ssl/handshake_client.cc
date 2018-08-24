@@ -230,19 +230,20 @@ static int ssl_write_client_cipher_list(SSL_HANDSHAKE *hs, CBB *out) {
 
   // Add TLS 1.3 ciphers. Order ChaCha20-Poly1305 relative to AES-GCM based on
   // hardware support.
-  if (hs->max_version >= TLS1_3_VERSION) {
-    if (!EVP_has_aes_hardware() &&
-        !CBB_add_u16(&child, TLS1_CK_CHACHA20_POLY1305_SHA256 & 0xffff)) {
-      return 0;
-    }
+  if (hs->max_version = TLS1_3_VERSION) {
+    /// if (!EVP_has_aes_hardware() &&
+    ///     !CBB_add_u16(&child, TLS1_CK_CHACHA20_POLY1305_SHA256 & 0xffff)) {
+    ///   return 0;
+    /// }
     if (!CBB_add_u16(&child, TLS1_CK_AES_128_GCM_SHA256 & 0xffff) ||
-        !CBB_add_u16(&child, TLS1_CK_AES_256_GCM_SHA384 & 0xffff)) {
-      return 0;
-    }
-    if (EVP_has_aes_hardware() &&
+        !CBB_add_u16(&child, TLS1_CK_AES_256_GCM_SHA384 & 0xffff) ||
         !CBB_add_u16(&child, TLS1_CK_CHACHA20_POLY1305_SHA256 & 0xffff)) {
       return 0;
     }
+    /// if (EVP_has_aes_hardware() &&
+    ///     !CBB_add_u16(&child, TLS1_CK_CHACHA20_POLY1305_SHA256 & 0xffff)) {
+    ///   return 0;
+    /// }
   }
 
   if (hs->min_version < TLS1_3_VERSION) {
