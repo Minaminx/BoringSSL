@@ -1541,10 +1541,13 @@ int SSL_CIPHER_is_block_cipher(const SSL_CIPHER *cipher) {
 uint16_t SSL_CIPHER_get_min_version(const SSL_CIPHER *cipher) {
   if (cipher->algorithm_mkey == SSL_kGENERIC || cipher->algorithm_auth == SSL_aGENERIC) {
       return TLS1_3_VERSION;
-  } else if (cipher->algorithm_prf != SSL_HANDSHAKE_MAC_DEFAULT) {
-      return TLS1_2_VERSION;
+  /// } else if (cipher->algorithm_prf != SSL_HANDSHAKE_MAC_DEFAULT) {
+  ///     return TLS1_2_VERSION;
+  /// } else {
+  ///     return 0;
+  /// }
   } else {
-      return 0;
+      return TLS1_2_VERSION;
   }
 
   /// if (cipher->algorithm_prf != SSL_HANDSHAKE_MAC_DEFAULT) {
