@@ -3389,13 +3389,15 @@ OPENSSL_EXPORT int SSL_total_renegotiations(const SSL *ssl);
 //
 // Make |tls13_rfc| the default after callers are switched to
 // explicitly enable |tls13_all|.
+///
+/// Make |tls13_all = 0| default, rather than |tls13_rfc = 0|.
+/// Revert the commit (#ba03f7e) to avoid removement of tls1.3 Draft verison.
 enum tls13_variant_t {
-  tls13_rfc = 0,
+  /// tls13_all enables all variants of TLS 1.3, includes |tls13_rfc tls13_draft23 tls13_draft28|.
+  tls13_all = 0,
   tls13_draft23,
   tls13_draft28,
-  // tls13_all enables all variants of TLS 1.3, to keep the transition smooth as
-  // early adopters move to the final version.
-  tls13_all,
+  tls13_rfc,
 };
 
 // SSL_CTX_set_tls13_variant sets which variant of TLS 1.3 we negotiate. On the

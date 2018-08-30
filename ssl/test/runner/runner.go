@@ -1024,7 +1024,8 @@ func runTest(test *testCase, shimPath string, mallocNumToFail int64) error {
 			panic(fmt.Sprintf("The name of test %q suggests that it's version specific, but min/max version in the Config is %x/%x. One of them should probably be %x", test.name, test.config.MinVersion, test.config.MaxVersion, ver.version))
 		}
 
-		if ver.tls13Variant != 0 {
+		// Ignore this check against "TLS13", since TLS13 is used in many test names.
+		if ver.tls13Variant != 0 && ver.tls13Variant != TLS13RFC {
 			var foundFlag bool
 			for _, flag := range test.flags {
 				if flag == "-tls13-variant" {
@@ -5787,7 +5788,7 @@ func addVersionNegotiationTests() {
 		name:     "IgnoreClientVersionOrder",
 		config: Config{
 			Bugs: ProtocolBugs{
-				SendSupportedVersions: []uint16{VersionTLS12, VersionTLS13},
+				SendSupportedVersions: []uint16{VersionTLS12, tls13Draft23Version},
 			},
 		},
 		expectedVersion: VersionTLS13,

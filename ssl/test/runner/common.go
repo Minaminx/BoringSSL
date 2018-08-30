@@ -39,10 +39,10 @@ const (
 )
 
 const (
-	TLS13RFC     = 0
+	TLS13All     = 0
 	TLS13Draft23 = 1
 	TLS13Draft28 = 2
-	TLS13All     = 3
+	TLS13RFC     = 3
 )
 
 var allTLSWireVersions = []uint16{
