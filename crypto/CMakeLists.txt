@@ -62,8 +62,14 @@ if(NOT OPENSSL_NO_ASM)
 endif()
 
 function(perlasm dest src)
+  get_filename_component(dir ${dest} DIRECTORY)
+  if ("${dir}" STREQUAL "")
+    set(dir ".")
+  endif()
+
   add_custom_command(
     OUTPUT ${dest}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${dir}
     COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${src} ${PERLASM_STYLE} ${PERLASM_FLAGS} ${ARGN} ${dest}
     DEPENDS
     ${src}
@@ -387,13 +393,15 @@ add_library(
   x509v3/v3_skey.c
   x509v3/v3_sxnet.c
   x509v3/v3_utl.c
-  ../../third_party/fiat/curve25519.c
+  ../third_party/fiat/curve25519.c
 
   $<TARGET_OBJECTS:fipsmodule>
 
   ${CRYPTO_ARCH_SOURCES}
   ${CRYPTO_FIPS_OBJECTS}
 )
+
+add_dependencies(crypto global_target)
 
 if(FIPS_DELOCATE)
   add_dependencies(crypto bcm_o_target)
@@ -455,6 +463,7 @@ add_executable(
   pkcs8/pkcs12_test.cc
   poly1305/poly1305_test.cc
   pool/pool_test.cc
+  rand_extra/rand_test.cc
   refcount_test.cc
   rsa_extra/rsa_test.cc
   self_test.cc
@@ -469,6 +478,8 @@ add_executable(
   $<TARGET_OBJECTS:boringssl_gtest_main>
   $<TARGET_OBJECTS:test_support>
 )
+
+add_dependencies(crypto_test global_target)
 
 target_link_libraries(crypto_test crypto boringssl_gtest)
 if(WIN32)

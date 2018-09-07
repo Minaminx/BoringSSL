@@ -166,12 +166,13 @@
 #include <openssl/md5.h>
 #include <openssl/mem.h>
 #include <openssl/rand.h>
+#include <openssl/sha.h>
 
 #include "../crypto/internal.h"
 #include "internal.h"
 
 
-namespace bssl {
+BSSL_NAMESPACE_BEGIN
 
 enum ssl_client_hs_state_t {
   state_start_connect = 0,
@@ -605,7 +606,7 @@ static enum ssl_hs_wait_t do_read_server_hello(SSL_HANDSHAKE *hs) {
     }
   }
 
-  if (!ssl->s3->initial_handshake_complete && ssl->session != NULL &&
+  if (!ssl->s3->initial_handshake_complete && ssl->session != nullptr &&
       ssl->session->session_id_length != 0 &&
       CBS_mem_equal(&session_id, ssl->session->session_id,
                     ssl->session->session_id_length)) {
@@ -1604,14 +1605,11 @@ static enum ssl_hs_wait_t do_read_session_ticket(SSL_HANDSHAKE *hs) {
   }
   session->ticket_lifetime_hint = ticket_lifetime_hint;
 
-  // Generate a session ID for this session based on the session ticket. We use
-  // the session ID mechanism for detecting ticket resumption. This also fits in
-  // with assumptions elsewhere in OpenSSL.
-  if (!EVP_Digest(CBS_data(&ticket), CBS_len(&ticket),
-                  session->session_id, &session->session_id_length,
-                  EVP_sha256(), NULL)) {
-    return ssl_hs_error;
-  }
+  // Generate a session ID for this session. Some callers expect all sessions to
+  // have a session ID. Additionally, it acts as the session ID to signal
+  // resumption.
+  SHA256(CBS_data(&ticket), CBS_len(&ticket), session->session_id);
+  session->session_id_length = SHA256_DIGEST_LENGTH;
 
   if (renewed_session) {
     session->not_resumable = false;
@@ -1820,4 +1818,4 @@ const char *ssl_client_handshake_state(SSL_HANDSHAKE *hs) {
   return "TLS client unknown";
 }
 
-}
+BSSL_NAMESPACE_END
