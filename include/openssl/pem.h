@@ -219,13 +219,6 @@ extern "C" {
                               enc, kstr, klen, cb, u);                         \
   }
 
-#define IMPLEMENT_PEM_write_cb_bio_const(name, type, str, asn1) \
-OPENSSL_EXPORT int PEM_write_bio_##name(BIO *bp, type *x, const EVP_CIPHER *enc, \
-	     unsigned char *kstr, int klen, pem_password_cb *cb, void *u) \
-	{ \
-	return PEM_ASN1_write_bio((i2d_of_void *)i2d_##asn1,str,bp,(void *)x,enc,kstr,klen,cb,u); \
-	}
-
 #define IMPLEMENT_PEM_write(name, type, str, asn1) \
 	IMPLEMENT_PEM_write_bio(name, type, str, asn1) \
 	IMPLEMENT_PEM_write_fp(name, type, str, asn1) 
