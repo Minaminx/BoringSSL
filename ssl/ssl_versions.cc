@@ -175,7 +175,7 @@ static bool set_min_version(const SSL_PROTOCOL_METHOD *method, uint16_t *out,
   // Zero is interpreted as the default minimum version.
   if (version == 0) {
     // TLS 1.0 does not exist in DTLS.
-    *out = TLS1_2_VERSION;  /// *out = method->is_dtls ? TLS1_1_VERSION : TLS1_VERSION;
+    *out = method->is_dtls ? TLS1_1_VERSION : TLS1_VERSION;
     return true;
   }
 

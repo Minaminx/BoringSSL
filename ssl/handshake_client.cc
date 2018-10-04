@@ -238,7 +238,7 @@ static bool ssl_write_client_cipher_list(SSL_HANDSHAKE *hs, CBB *out) {
       }
     } else {
       if (!CBB_add_u16(&child, TLS1_CK_AES_128_GCM_SHA256 & 0xffff) ||
-          !CBB_add_u16(&child, TLS1_CK_AES_256_GCM_SHA384 & 0xffff) ) {
+          !CBB_add_u16(&child, TLS1_CK_AES_256_GCM_SHA384 & 0xffff)) {
           return false;
       }
     }

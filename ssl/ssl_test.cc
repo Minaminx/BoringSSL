@@ -819,16 +819,13 @@ static void ExpectDefaultVersion(uint16_t min_version, uint16_t max_version,
 
 TEST(SSLTest, DefaultVersion) {
   // TODO(svaldez): Update this when TLS 1.3 is enabled by default.
-  /// ExpectDefaultVersion(TLS1_VERSION, TLS1_2_VERSION, &TLS_method);
-  /// ExpectDefaultVersion(TLS1_VERSION, TLS1_VERSION, &TLSv1_method);
-  /// ExpectDefaultVersion(TLS1_1_VERSION, TLS1_1_VERSION, &TLSv1_1_method);
-  /// ExpectDefaultVersion(TLS1_2_VERSION, TLS1_2_VERSION, &TLSv1_2_method);
-  /// ExpectDefaultVersion(TLS1_1_VERSION, TLS1_2_VERSION, &DTLS_method);
-  /// ExpectDefaultVersion(TLS1_1_VERSION, TLS1_1_VERSION, &DTLSv1_method);
-  /// ExpectDefaultVersion(TLS1_2_VERSION, TLS1_2_VERSION, &DTLSv1_2_method);
-  ExpectDefaultVersion(TLS1_2_VERSION, TLS1_3_VERSION, &TLS_method);
+  ExpectDefaultVersion(TLS1_VERSION, TLS1_2_VERSION, &TLS_method);
+  ExpectDefaultVersion(TLS1_VERSION, TLS1_VERSION, &TLSv1_method);
+  ExpectDefaultVersion(TLS1_1_VERSION, TLS1_1_VERSION, &TLSv1_1_method);
   ExpectDefaultVersion(TLS1_2_VERSION, TLS1_2_VERSION, &TLSv1_2_method);
-  ExpectDefaultVersion(TLS1_3_VERSION, TLS1_3_VERSION, &TLSv1_2_method);
+  ExpectDefaultVersion(TLS1_1_VERSION, TLS1_2_VERSION, &DTLS_method);
+  ExpectDefaultVersion(TLS1_1_VERSION, TLS1_1_VERSION, &DTLSv1_method);
+  ExpectDefaultVersion(TLS1_2_VERSION, TLS1_2_VERSION, &DTLSv1_2_method);
 }
 
 TEST(SSLTest, CipherProperties) {
@@ -2581,16 +2578,11 @@ TEST(SSLTest, SetVersion) {
   bssl::UniquePtr<SSL_CTX> ctx(SSL_CTX_new(TLS_method()));
   ASSERT_TRUE(ctx);
 
-  /// // Set valid TLS versions.
-  /// EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_VERSION));
-  /// EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_1_VERSION));
-  /// EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), TLS1_VERSION));
-  /// EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), TLS1_1_VERSION));
-  /// remove legacy ssl_version
-  EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_2_VERSION));
-  EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_3_VERSION));
-  EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), TLS1_2_VERSION));
-  EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), TLS1_3_VERSION));
+  // Set valid TLS versions.
+  EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_VERSION));
+  EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_1_VERSION));
+  EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), TLS1_VERSION));
+  EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), TLS1_1_VERSION));
 
   // Invalid TLS versions are rejected.
   EXPECT_FALSE(SSL_CTX_set_max_proto_version(ctx.get(), DTLS1_VERSION));
@@ -2604,22 +2596,23 @@ TEST(SSLTest, SetVersion) {
   EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), 0));
   EXPECT_EQ(TLS1_3_VERSION, ctx->conf_max_version);  /// EXPECT_EQ(TLS1_2_VERSION, ctx->conf_max_version);
   EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), 0));
-  EXPECT_EQ(TLS1_2_VERSION, ctx->conf_min_version);  /// EXPECT_EQ(TLS1_VERSION, ctx->conf_min_version);
+  EXPECT_EQ(TLS1_VERSION, ctx->conf_min_version);
 
   // TLS 1.3 is available, but not by default.
   EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_3_VERSION));
   EXPECT_EQ(TLS1_3_VERSION, ctx->conf_max_version);
 
-  /// // SSL 3.0 is not available.
+  // SSL 3.0 is not available.
   /// EXPECT_FALSE(SSL_CTX_set_min_proto_version(ctx.get(), SSL3_VERSION));
-  /// remove SSL3_VERSION now.
+  /// SSLv3 is gone.
 
   // TLS1_3_DRAFT_VERSION is not an API-level version.
   EXPECT_FALSE(
       SSL_CTX_set_max_proto_version(ctx.get(), TLS1_3_DRAFT23_VERSION));
-  /// add draft28 and rfc determination.
+  /// add draft28 determination.
   EXPECT_FALSE(
       SSL_CTX_set_max_proto_version(ctx.get(), TLS1_3_DRAFT28_VERSION));
+  /// add rfc determination.
   EXPECT_FALSE(
       SSL_CTX_set_max_proto_version(ctx.get(), TLS1_3_VERSION));
   ERR_clear_error();
@@ -2627,15 +2620,10 @@ TEST(SSLTest, SetVersion) {
   ctx.reset(SSL_CTX_new(DTLS_method()));
   ASSERT_TRUE(ctx);
 
-  /// disable DTLS_VERSION
-  /// EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), DTLS1_VERSION));
-  /// EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), DTLS1_2_VERSION));
-  /// EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), DTLS1_VERSION));
-  /// EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), DTLS1_2_VERSION));
-  EXPECT_FALSE(SSL_CTX_set_max_proto_version(ctx.get(), DTLS1_VERSION));
-  EXPECT_FALSE(SSL_CTX_set_max_proto_version(ctx.get(), DTLS1_2_VERSION));
-  EXPECT_FALSE(SSL_CTX_set_min_proto_version(ctx.get(), DTLS1_VERSION));
-  EXPECT_FALSE(SSL_CTX_set_min_proto_version(ctx.get(), DTLS1_2_VERSION));
+  EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), DTLS1_VERSION));
+  EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), DTLS1_2_VERSION));
+  EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), DTLS1_VERSION));
+  EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), DTLS1_2_VERSION));
 
   EXPECT_FALSE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_VERSION));
   EXPECT_FALSE(SSL_CTX_set_max_proto_version(ctx.get(), 0xfefe /* DTLS 1.1 */));
@@ -2649,7 +2637,7 @@ TEST(SSLTest, SetVersion) {
   EXPECT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), 0));
   EXPECT_EQ(TLS1_3_VERSION, ctx->conf_max_version);  /// EXPECT_EQ(TLS1_2_VERSION, ctx->conf_max_version);
   EXPECT_TRUE(SSL_CTX_set_min_proto_version(ctx.get(), 0));
-  EXPECT_EQ(TLS1_2_VERSION, ctx->conf_min_version);  /// EXPECT_EQ(TLS1_1_VERSION, ctx->conf_min_version);
+  EXPECT_EQ(TLS1_1_VERSION, ctx->conf_min_version);
 }
 
 static const char *GetVersionName(uint16_t version) {
@@ -3816,8 +3804,7 @@ TEST(SSLTest, NoCiphersAvailable) {
   // version configuration.
   ASSERT_TRUE(SSL_CTX_set_strict_cipher_list(
       ctx.get(), "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"));
-  /// ASSERT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_1_VERSION));
-  ASSERT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_2_VERSION));
+  ASSERT_TRUE(SSL_CTX_set_max_proto_version(ctx.get(), TLS1_1_VERSION));
 
   bssl::UniquePtr<SSL> ssl(SSL_new(ctx.get()));
   ASSERT_TRUE(ssl);
