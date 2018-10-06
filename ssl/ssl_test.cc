@@ -822,10 +822,11 @@ TEST(SSLTest, DefaultVersion) {
   /// add TLS 1.3 test now.
   ExpectDefaultVersion(TLS1_VERSION, TLS1_2_VERSION, &TLS_method);
   ExpectDefaultVersion(TLS1_VERSION, TLS1_3_VERSION, &TLS_method);
-  ExpectDefaultVersion(TLS1_VERSION, TLS1_VERSION, &TLSv1_method);
+
+  ExpectDefaultVersion(TLS1_VERSION,   TLS1_VERSION,   &TLSv1_method);
   ExpectDefaultVersion(TLS1_1_VERSION, TLS1_1_VERSION, &TLSv1_1_method);
   ExpectDefaultVersion(TLS1_2_VERSION, TLS1_2_VERSION, &TLSv1_2_method);
-  ExpectDefaultVersion(TLS1_3_VERSION, TLS1_3_VERSION, &TLSv1_3_method);
+
   ExpectDefaultVersion(TLS1_1_VERSION, TLS1_2_VERSION, &DTLS_method);
   ExpectDefaultVersion(TLS1_1_VERSION, TLS1_1_VERSION, &DTLSv1_method);
   ExpectDefaultVersion(TLS1_2_VERSION, TLS1_2_VERSION, &DTLSv1_2_method);
