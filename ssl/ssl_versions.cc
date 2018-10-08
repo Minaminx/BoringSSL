@@ -143,8 +143,7 @@ static uint16_t wire_version_to_api(uint16_t version) {
 // used in context where that does not matter.
 static bool api_version_to_wire(uint16_t *out, uint16_t version) {
   if (version == TLS1_3_DRAFT23_VERSION ||
-      version == TLS1_3_DRAFT28_VERSION ||
-      version == TLS1_3_VERSION) {
+      version == TLS1_3_DRAFT28_VERSION) {
     return false;
   }
 
