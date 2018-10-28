@@ -2015,7 +2015,7 @@ struct CertCompressionAlg {
 
 BSSL_NAMESPACE_END
 
-DECLARE_LHASH_OF(SSL_SESSION)
+DEFINE_LHASH_OF(SSL_SESSION)
 
 DEFINE_NAMED_STACK_OF(CertCompressionAlg, bssl::CertCompressionAlg);
 
